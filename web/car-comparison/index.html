@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kubera Car Choice — Англия → Испания</title>
+<style>
+:root{--bg:#0b1220;--card:#121c2f;--line:#263653;--text:#edf3ff;--muted:#9eb0cc;--accent:#5ee0a0;--warn:#ffd166}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#09111f,#15233c);color:var(--text);font:15px/1.45 system-ui,sans-serif}
+main{max-width:1280px;margin:auto;padding:28px}h1{margin:0 0 6px;font-size:clamp(26px,4vw,44px)}p{color:var(--muted)}.panel{background:rgba(18,28,47,.94);border:1px solid var(--line);border-radius:16px;padding:18px;margin:18px 0}
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}label{color:var(--muted)}input,select{width:100%;margin-top:5px;padding:10px;border-radius:9px;border:1px solid var(--line);background:#0b1425;color:var(--text)}
+.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:1050px}th,td{padding:11px 9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}th{position:sticky;top:0;background:#121c2f;color:#bcd0ec}tr.best{background:rgba(94,224,160,.1)}.score{font-weight:800;color:var(--accent)}.cost{font-weight:750}.badge{display:inline-block;padding:3px 8px;border-radius:99px;background:#22324f}.good{color:var(--accent)}.warn{color:var(--warn)}button{border:0;border-radius:10px;padding:11px 16px;background:var(--accent);color:#062015;font-weight:800;cursor:pointer}.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.summary>div{background:#0b1425;border-radius:12px;padding:14px}.small{font-size:13px}.right{text-align:right}
+</style>
+</head>
+<body><main>
+<h1>Kubera Car Choice</h1>
+<p>Сравнение машин для редкой езды по Лондону и дальней поездки Англия → Испания.</p>
+<section class="panel controls">
+<label>Пробег в месяц, миль<input id="miles" type="number" min="0" value="600"></label>
+<label>Приоритет
+<select id="priority"><option value="balanced">Баланс</option><option value="reliability">Надёжность</option><option value="cost">Минимальные расходы</option><option value="trip">Дальняя поездка</option></select></label>
+<label>Показывать<input id="filter" placeholder="Например: Polo"></label>
+<div style="align-self:end"><button id="recalc">Пересчитать</button></div>
+</section>
+<section class="panel summary">
+<div><span class="small">Лучший общий выбор</span><h2 id="winner">—</h2></div>
+<div><span class="small">Самый дешёвый в месяц</span><h2 id="cheapest">—</h2></div>
+<div><span class="small">Для Испании</span><h2 id="tripBest">—</h2></div>
+</section>
+<section class="panel table-wrap"><table>
+<thead><tr><th>#</th><th>Машина</th><th>Топливо</th><th>Налог/ULEZ</th><th>£/месяц при 600 милях</th><th>Надёжность</th><th>Запчасти</th><th>Безопасность</th><th>Испания</th><th>Рейтинг</th></tr></thead>
+<tbody id="rows"></tbody></table></section>
+<section class="panel small">
+<strong>Как читать расчёт.</strong>
+<p>Исходные месячные диапазоны перенесены из предыдущего сравнения пользователя. При изменении пробега программа масштабирует переменную часть расходов; это ориентир, не страховая котировка. Налог и ULEZ нужно проверять по регистрационному номеру на GOV.UK/TfL, страховку — по личной котировке. Перед дальней поездкой обязательны MOT, диагностика охлаждения, шин, тормозов, аккумулятора и ремней/цепи.</p>
+</section>
+</main>
+<script>
+const cars=[
+{name:"Honda HR-V 1.6 i-DTEC",fuel:"Diesel",low:334,high:414,rel:9,parts:7,safe:8,trip:9,tax:"Проверить ULEZ"},
+{name:"Nissan Juke 1.5 dCi",fuel:"Diesel",low:300,high:410,rel:7,parts:8,safe:7,trip:8,tax:"Проверить ULEZ"},
+{name:"Toyota Urban Cruiser",fuel:"Diesel",low:299,high:409,rel:9,parts:7,safe:7,trip:8,tax:"В расчёте без ULEZ"},
+{name:"Ford EcoSport",fuel:"—",low:284,high:394,rel:7,parts:9,safe:7,trip:7,tax:"В расчёте без ULEZ"},
+{name:"Volkswagen Polo 1.2 Match Edition (2013)",fuel:"Petrol",low:295,high:415,rel:8,parts:9,safe:7,trip:7,tax:"Euro 5; проверить налог"},
+{name:"Ford Focus",fuel:"—",low:322,high:462,rel:7,parts:10,safe:9,trip:9,tax:"Проверить версию"},
+{name:"Nissan Juke 1.2",fuel:"Petrol",low:358,high:508,rel:5,parts:8,safe:7,trip:6,tax:"Проверить версию"},
+{name:"Ford Fiesta",fuel:"—",low:350,high:510,rel:7,parts:10,safe:7,trip:7,tax:"Проверить версию"}
+];
+const weights={balanced:[.3,.2,.15,.35],reliability:[.5,.15,.1,.25],cost:[.2,.15,.1,.2],trip:[.3,.1,.15,.45]};
+function calc(){
+ const miles=Math.max(0,+document.querySelector("#miles").value||0), factor=.55+.45*(miles/600);
+ const q=document.querySelector("#filter").value.toLowerCase(), p=document.querySelector("#priority").value, w=weights[p];
+ const data=cars.filter(c=>c.name.toLowerCase().includes(q)).map(c=>{
+  const low=Math.round(c.low*factor),high=Math.round(c.high*factor),mid=(low+high)/2;
+  let score=c.rel*w[0]+c.parts*w[1]+c.safe*w[2]+c.trip*w[3];
+  if(p==="cost")score+=Math.max(0,(520-mid)/60);
+  return {...c,low,high,mid,score};
+ }).sort((a,b)=>b.score-a.score);
+ const cheapest=[...data].sort((a,b)=>a.mid-b.mid)[0], trip=[...data].sort((a,b)=>b.trip-a.trip||b.rel-a.rel)[0];
+ document.querySelector("#winner").textContent=data[0]?.name||"—";
+ document.querySelector("#cheapest").textContent=cheapest?cheapest.name+" (£"+Math.round(cheapest.mid)+")":"—";
+ document.querySelector("#tripBest").textContent=trip?.name||"—";
+ document.querySelector("thead th:nth-child(5)").textContent="£/месяц при "+miles+" милях";
+ document.querySelector("#rows").innerHTML=data.map((c,i)=>`<tr class="${i===0?"best":""}"><td>${i+1}</td><td><strong>${c.name}</strong></td><td>${c.fuel}</td><td><span class="badge">${c.tax}</span></td><td class="cost">£${c.low}–£${c.high}</td><td>${c.rel}/10</td><td>${c.parts}/10</td><td>${c.safe}/10</td><td>${c.trip}/10</td><td class="score">${c.score.toFixed(1)}</td></tr>`).join("");
+}
+document.querySelector("#recalc").onclick=calc;document.querySelector("#filter").oninput=calc;document.querySelector("#priority").onchange=calc;calc();
+</script></body></html>
