@@ -1,6 +1,6 @@
 # Kubera Learning 📚
 
-Learning repository of Nikolay (Kubera)  
+Learning repository of Nikola (Kubera)  
 for studying Python, GitHub, LangChain, Vercel, and AI projects.
 
 ---
