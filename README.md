@@ -19,9 +19,11 @@ Build the knowledge and practical engineering skills needed to:
 
 ## 🧭 Start here
 
-➡️ **[KUBERA AI Engineer Roadmap](docs/AI_ENGINEER_ROADMAP.md)**
+➡️ **[KUBERA AI Engineer Roadmap](docs/AI_ENGINEER_ROADMAP.md)** — what to learn and what to build at every stage.
 
-The roadmap organizes the learning path into practical stages, from Python and neural-network foundations through LLM engineering, RAG, agents, protocols, evals, local AI, durable execution and production systems.
+➡️ **[KUBERA AI Intelligence Library](docs/KUBERA_AI_INTELLIGENCE_LIBRARY.md)** — external AI projects translated into concrete architectural lessons for KUBERA.
+
+The roadmap organizes the learning path from Python and neural-network foundations through LLM engineering, RAG, agents, protocols, evals, local AI, durable execution and production systems. The Intelligence Library then asks a second question: **which ideas from strong open-source projects are actually worth adapting?**
 
 ## 🧠 Core learning tracks
 
@@ -36,6 +38,21 @@ The roadmap organizes the learning path into practical stages, from Python and n
 | Local AI | Private inference, model routing | Cost/privacy control |
 | Production | Observability, deployment, security | Systems that survive real use |
 
+## 🔭 Intelligence Library coverage
+
+The library currently studies 20+ important technologies and projects across:
+
+- agent orchestration;
+- local model runtimes;
+- RAG and document ingestion;
+- model routing;
+- evals and red-team testing;
+- observability;
+- MCP and agent interoperability;
+- coding agents and sandboxed execution.
+
+Each entry records what the project teaches us, what KUBERA could adapt, and what should **not** be copied blindly.
+
 ## 🔥 Curated external knowledge
 
 A major reference is [awesome-artificial-intelligence](https://github.com/owainlewis/awesome-artificial-intelligence), an actively maintained curated collection covering AI foundations, LLM engineering, agent frameworks, retrieval, evals, deployment and coding agents.
@@ -47,7 +64,7 @@ Rather than copying that repository, Kubera Learning selects the parts most rele
 - `python-lessons/` — Python scripts and exercises.
 - `ai-projects/` — AI experiments and prototypes.
 - `web/` — simple websites and deployment experiments.
-- `docs/` — learning notes, roadmaps and technical guides.
+- `docs/` — learning notes, roadmaps and technical intelligence.
 
 ## 🛠️ Build-first rule
 
@@ -62,7 +79,7 @@ Every important subject should eventually produce something testable:
 
 ## 🤖 Connection to KUBERA AGENT OS
 
-Learning here supports the private KUBERA AGENT OS project, especially:
+Learning and external research here support the private KUBERA AGENT OS project, especially:
 
 - model routing;
 - reusable agent skills;
@@ -71,7 +88,9 @@ Learning here supports the private KUBERA AGENT OS project, especially:
 - privacy gates;
 - project and failure memory;
 - human-control levels;
-- agent evaluation and laboratory testing.
+- agent evaluation and laboratory testing;
+- sandboxed tool execution;
+- protocol-based interoperability.
 
 The protected implementation stays separate from this public learning repository.
 
