@@ -1,5 +1,7 @@
 # Kubera Learning 📚
 
+> **Canonical repository name: `kubera-learning`.** The current repository name has a trailing dot; content remains here until the repository is migrated/renamed safely.
+
 A practical learning laboratory for becoming an **AI engineer and AI-agent builder**.
 
 This repository is not intended to be a giant bookmark dump. It turns high-quality external knowledge into a focused path: **learn → build → test → document → improve**.
