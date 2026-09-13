@@ -1,0 +1,92 @@
+name: Import spiritual library
+
+on:
+  push:
+    paths:
+      - '.github/workflows/import-spiritual-library.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download reproducible public/open texts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p docs/books/bhagavad-gita docs/books/shiva-samhita docs/books/mantras docs/books/prayers docs/books/tibetan-book-of-the-dead
+
+          python -m pip install --quiet beautifulsoup4
+
+          python - <<'PY'
+          from pathlib import Path
+          import requests
+          from bs4 import BeautifulSoup
+
+          def get(url):
+              r = requests.get(url, timeout=60, headers={'User-Agent':'KUBERA-Learning/1.0'})
+              r.raise_for_status()
+              return r.text
+
+          # 1914 Russian translation by A. Kamenskaya and I. de Manziarly.
+          url='https://bhagavadgita.ru/bg_kamenskaya_manziarli.htm'
+          soup=BeautifulSoup(get(url),'html.parser')
+          for tag in soup(['script','style']): tag.decompose()
+          text='\n'.join(x.strip() for x in soup.get_text('\n').splitlines() if x.strip())
+          Path('docs/books/bhagavad-gita/russian-kamenskaya-1914.txt').write_text(text, encoding='utf-8')
+
+          Path('docs/books/bhagavad-gita/README.md').write_text('''# Бхагавад-гита\n\nПолный русский текст: перевод А. А. Каменской и И. В. де Манциарли, издание 1914 года.\n\nТакже сохраняем машинно-читаемые открытые данные оригинала из `gita/gita`: Sanskrit verses, chapters and metadata.\n''', encoding='utf-8')
+
+          Path('docs/books/tibetan-book-of-the-dead/README.md').write_text('''# Тибетская книга мёртвых — Бардо Тхёдол\n\nОсновной текст для локальной библиотеки должен храниться в версии, права на которую позволяют воспроизведение в публичном репозитории. Перевод Evans-Wentz 1927 не копируется автоматически: его статус в Великобритании требует отдельной проверки.\n\nИсточник полного текста для чтения: Wikisource, *The Tibetan Book of the Dead*, Book 1 и Book 2.\n''', encoding='utf-8')
+          ''', encoding='utf-8')
+          PY
+
+          curl -L --fail https://raw.githubusercontent.com/gita/gita/main/data/verse.json -o docs/books/bhagavad-gita/verse.json
+          curl -L --fail https://raw.githubusercontent.com/gita/gita/main/data/translation.json -o docs/books/bhagavad-gita/translation.json
+          curl -L --fail https://raw.githubusercontent.com/gita/gita/main/data/chapters.json -o docs/books/bhagavad-gita/chapters.json
+
+          curl -L --fail https://raw.githubusercontent.com/sanskrit/raw_etexts/master/AgamAH/shaivam/shiva_samhita.md -o docs/books/shiva-samhita/shiva_samhita_sanskrit.md
+          cat > docs/books/shiva-samhita/README.md <<'EOF'
+# Шива-самхита
+
+Полный доступный санскритский текст «Шива-самхиты», пять патал.
+
+Источник: `sanskrit/raw_etexts`.
+EOF
+
+          cat > docs/books/mantras/README.md <<'EOF'
+# Мантры
+
+Коллекция традиционных мантр для локального изучения. Здесь будут храниться оригинал, транслитерация и русский смысл.
+EOF
+
+          cat > docs/books/prayers/README.md <<'EOF'
+# Молитвы
+
+Коллекция традиционных молитв для локального изучения. Здесь будут храниться оригинал, транслитерация и русский смысл.
+EOF
+
+          cat > docs/books/library-manifest.md <<'EOF'
+# KUBERA Spiritual Library
+
+- `bhagavad-gita/` — Бхагавад-гита: русский перевод Каменской 1914 + открытые JSON-данные.
+- `shiva-samhita/` — полный доступный санскритский текст Шива-самхиты.
+- `mantras/` — мантры.
+- `prayers/` — молитвы.
+- `tibetan-book-of-the-dead/` — Бардо Тхёдол; права на конкретный английский перевод проверяются отдельно.
+EOF
+
+      - name: Commit imported texts
+        shell: bash
+        run: |
+          git config user.name 'KUBERA Library Bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/books
+          git diff --cached --quiet && exit 0
+          git commit -m 'Import spiritual library texts'
+          git push
