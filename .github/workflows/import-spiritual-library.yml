@@ -21,7 +21,7 @@ jobs:
           set -euo pipefail
           mkdir -p docs/books/bhagavad-gita docs/books/shiva-samhita docs/books/mantras docs/books/prayers docs/books/tibetan-book-of-the-dead
 
-          python -m pip install --quiet beautifulsoup4
+          python -m pip install --quiet beautifulsoup4 requests
 
           python - <<'PY'
           from pathlib import Path
@@ -43,7 +43,6 @@ jobs:
           Path('docs/books/bhagavad-gita/README.md').write_text('''# Бхагавад-гита\n\nПолный русский текст: перевод А. А. Каменской и И. В. де Манциарли, издание 1914 года.\n\nТакже сохраняем машинно-читаемые открытые данные оригинала из `gita/gita`: Sanskrit verses, chapters and metadata.\n''', encoding='utf-8')
 
           Path('docs/books/tibetan-book-of-the-dead/README.md').write_text('''# Тибетская книга мёртвых — Бардо Тхёдол\n\nОсновной текст для локальной библиотеки должен храниться в версии, права на которую позволяют воспроизведение в публичном репозитории. Перевод Evans-Wentz 1927 не копируется автоматически: его статус в Великобритании требует отдельной проверки.\n\nИсточник полного текста для чтения: Wikisource, *The Tibetan Book of the Dead*, Book 1 и Book 2.\n''', encoding='utf-8')
-          ''', encoding='utf-8')
           PY
 
           curl -L --fail https://raw.githubusercontent.com/gita/gita/main/data/verse.json -o docs/books/bhagavad-gita/verse.json
