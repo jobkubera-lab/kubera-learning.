@@ -5,6 +5,12 @@ on:
     paths:
       - '.github/workflows/import-spiritual-library.yml'
   workflow_dispatch:
+    inputs:
+      apply:
+        description: 'Commit imported texts to the selected branch'
+        required: true
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -112,6 +118,7 @@ jobs:
             > docs/books/library-manifest.md
 
       - name: Commit imported texts
+        if: github.event_name == 'workflow_dispatch' && inputs.apply == true
         shell: bash
         run: |
           git config user.name 'KUBERA Library Bot'
