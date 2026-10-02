@@ -21,31 +21,28 @@ jobs:
           set -euo pipefail
           mkdir -p docs/books/bhagavad-gita docs/books/shiva-samhita docs/books/mantras docs/books/prayers docs/books/tibetan-book-of-the-dead
 
-          python -m pip install --quiet beautifulsoup4 requests
+          python -m pip install --quiet pypdf requests
 
           python - <<'PY'
+          from io import BytesIO
           from pathlib import Path
+
           import requests
-          from bs4 import BeautifulSoup
+          from pypdf import PdfReader
 
-          def get(url):
-              response = requests.get(
-                  url,
-                  timeout=60,
-                  headers={"User-Agent": "KUBERA-Learning/1.0"},
-              )
-              response.raise_for_status()
-              return response.text
-
-          url = "https://bhagavadgita.ru/bg_kamenskaya_manziarli.htm"
-          soup = BeautifulSoup(get(url), "html.parser")
-          for tag in soup(["script", "style"]):
-              tag.decompose()
-          text = "\n".join(
-              line.strip()
-              for line in soup.get_text("\n").splitlines()
-              if line.strip()
+          source_url = "https://www.fondtheosophy.ru/phocadownload/bkhagavad-gita/old.pdf"
+          response = requests.get(
+              source_url,
+              timeout=90,
+              headers={"User-Agent": "KUBERA-Learning/1.0"},
           )
+          response.raise_for_status()
+
+          reader = PdfReader(BytesIO(response.content))
+          text = "\n".join((page.extract_text() or "").strip() for page in reader.pages)
+          if len(text.strip()) < 1000:
+              raise RuntimeError("Russian Bhagavad Gita extraction produced too little text")
+
           Path("docs/books/bhagavad-gita/russian-kamenskaya-1914.txt").write_text(
               text,
               encoding="utf-8",
@@ -56,6 +53,7 @@ jobs:
               "",
               "Полный русский текст: перевод А. А. Каменской и И. В. де Манциарли, издание 1914 года.",
               "",
+              "Текст извлекается воспроизводимо из открытой цифровой копии издания 1914 года.",
               "Также сохраняем машинно-читаемые открытые данные оригинала из `gita/gita`: Sanskrit verses, chapters and metadata.",
               "",
           ])
