@@ -51,23 +51,29 @@ jobs:
               encoding="utf-8",
           )
 
+          gita_readme = "\n".join([
+              "# Бхагавад-гита",
+              "",
+              "Полный русский текст: перевод А. А. Каменской и И. В. де Манциарли, издание 1914 года.",
+              "",
+              "Также сохраняем машинно-читаемые открытые данные оригинала из `gita/gita`: Sanskrit verses, chapters and metadata.",
+              "",
+          ])
           Path("docs/books/bhagavad-gita/README.md").write_text(
-              """# Бхагавад-гита
-
-Полный русский текст: перевод А. А. Каменской и И. В. де Манциарли, издание 1914 года.
-
-Также сохраняем машинно-читаемые открытые данные оригинала из `gita/gita`: Sanskrit verses, chapters and metadata.
-""",
+              gita_readme,
               encoding="utf-8",
           )
 
+          bardo_readme = "\n".join([
+              "# Тибетская книга мёртвых — Бардо Тхёдол",
+              "",
+              "Основной текст для локальной библиотеки должен храниться в версии, права на которую позволяют воспроизведение в публичном репозитории. Перевод Evans-Wentz 1927 не копируется автоматически: его статус в Великобритании требует отдельной проверки.",
+              "",
+              "Источник полного текста для чтения: Wikisource, *The Tibetan Book of the Dead*, Book 1 и Book 2.",
+              "",
+          ])
           Path("docs/books/tibetan-book-of-the-dead/README.md").write_text(
-              """# Тибетская книга мёртвых — Бардо Тхёдол
-
-Основной текст для локальной библиотеки должен храниться в версии, права на которую позволяют воспроизведение в публичном репозитории. Перевод Evans-Wentz 1927 не копируется автоматически: его статус в Великобритании требует отдельной проверки.
-
-Источник полного текста для чтения: Wikisource, *The Tibetan Book of the Dead*, Book 1 и Book 2.
-""",
+              bardo_readme,
               encoding="utf-8",
           )
           PY
@@ -77,35 +83,35 @@ jobs:
           curl -L --fail --retry 3 https://raw.githubusercontent.com/gita/gita/main/data/chapters.json -o docs/books/bhagavad-gita/chapters.json
           curl -L --fail --retry 3 https://raw.githubusercontent.com/sanskrit/raw_etexts/master/AgamAH/shaivam/shiva_samhita.md -o docs/books/shiva-samhita/shiva_samhita_sanskrit.md
 
-          cat > docs/books/shiva-samhita/README.md <<'EOF'
-          # Шива-самхита
+          printf '%s\n' \
+            '# Шива-самхита' \
+            '' \
+            'Полный доступный санскритский текст «Шива-самхиты», пять патал.' \
+            '' \
+            'Источник: `sanskrit/raw_etexts`.' \
+            > docs/books/shiva-samhita/README.md
 
-          Полный доступный санскритский текст «Шива-самхиты», пять патал.
+          printf '%s\n' \
+            '# Мантры' \
+            '' \
+            'Коллекция традиционных мантр для локального изучения. Здесь будут храниться оригинал, транслитерация и русский смысл.' \
+            > docs/books/mantras/README.md
 
-          Источник: `sanskrit/raw_etexts`.
-          EOF
+          printf '%s\n' \
+            '# Молитвы' \
+            '' \
+            'Коллекция традиционных молитв для локального изучения. Здесь будут храниться оригинал, транслитерация и русский смысл.' \
+            > docs/books/prayers/README.md
 
-          cat > docs/books/mantras/README.md <<'EOF'
-          # Мантры
-
-          Коллекция традиционных мантр для локального изучения. Здесь будут храниться оригинал, транслитерация и русский смысл.
-          EOF
-
-          cat > docs/books/prayers/README.md <<'EOF'
-          # Молитвы
-
-          Коллекция традиционных молитв для локального изучения. Здесь будут храниться оригинал, транслитерация и русский смысл.
-          EOF
-
-          cat > docs/books/library-manifest.md <<'EOF'
-          # KUBERA Spiritual Library
-
-          - `bhagavad-gita/` — Бхагавад-гита: русский перевод Каменской 1914 + открытые JSON-данные.
-          - `shiva-samhita/` — полный доступный санскритский текст Шива-самхиты.
-          - `mantras/` — мантры.
-          - `prayers/` — молитвы.
-          - `tibetan-book-of-the-dead/` — Бардо Тхёдол; права на конкретный английский перевод проверяются отдельно.
-          EOF
+          printf '%s\n' \
+            '# KUBERA Spiritual Library' \
+            '' \
+            '- `bhagavad-gita/` — Бхагавад-гита: русский перевод Каменской 1914 + открытые JSON-данные.' \
+            '- `shiva-samhita/` — полный доступный санскритский текст Шива-самхиты.' \
+            '- `mantras/` — мантры.' \
+            '- `prayers/` — молитвы.' \
+            '- `tibetan-book-of-the-dead/` — Бардо Тхёдол; права на конкретный английский перевод проверяются отдельно.' \
+            > docs/books/library-manifest.md
 
       - name: Commit imported texts
         shell: bash
