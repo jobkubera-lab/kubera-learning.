@@ -1,6 +1,6 @@
 # Kubera Learning 📚
 
-> **Canonical repository name: `kubera-learning`.** The current repository name has a trailing dot; content remains here until the repository is migrated/renamed safely.
+> **Canonical repository:** `kubera-learning` — the public KUBERA learning and experimentation lab.
 
 A practical learning laboratory for becoming an **AI engineer and AI-agent builder**.
 
